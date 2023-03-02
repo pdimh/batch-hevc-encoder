@@ -1,0 +1,5 @@
+# Video files
+*.mp4
+
+# IDE
+.vscode
