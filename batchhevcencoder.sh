@@ -28,7 +28,7 @@ for f in *; do
     
     if [[ ! -e $new_fname ]]
     then
-      echo "convert"
+      ffmpeg -i "$f" -c:v libx265 -crf 24 -preset medium -c:a copy "$new_fname"
     else
       echo "OK"
     fi
