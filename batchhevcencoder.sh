@@ -1,12 +1,61 @@
 #!/bin/bash
 
-# Perform batch videos encoding to hevc using ffmpeg
+# Perform batch encoding of videos to HEVC using ffmpeg
 # Author: Pedro Henrique da Silva Palhares
 
-OUTPUT_FOLDER="output/"
+crf=23
+output_folder="output/"
+preset="medium"
 
-if [[ ! -d $OUTPUT_FOLDER ]]; then 
-  mkdir $OUTPUT_FOLDER || exit 1
+# Function to print help message
+print_help() {
+  echo "Perform batch encoding of videos to HEVC using ffmpeg."
+  echo
+  echo "Sintax: batchhevcencoder.sh [-h|-?] [-f <crf>] [-o <output>] [-p <preset>]"
+  echo "  -h                          Print this help."
+  echo "  -f <crf>                    Set the Constant Rate Factor. Default: $crf"
+  echo "  -p <preset>                 Set the preset. Default: $preset"
+  echo "  -o <output>                 Set the output folder. Default: $output_folder"
+  echo
+}
+
+convert() {
+  local filename=$1
+  local crf=$2
+  local preset=$3
+  local output_file=$4
+
+  ffmpeg -i "$filename" -c:v libx265 -crf $crf -preset $preset -c:a copy -n "$output_file"
+}
+
+while getopts ": h f: o: p:" opt; do
+  case $opt in
+    h)
+      print_help
+      exit 0
+      ;;
+    f)
+      crf="$OPTARG"
+      ;;
+    o)
+      output_folder="$OPTARG"
+      ;;
+    p)
+      preset="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+if [[ ! -d $output_folder ]]; then 
+  mkdir $output_folder || exit 1
 fi
 
 for f in *; do
@@ -24,16 +73,16 @@ for f in *; do
   echo "$fname $check_hevc"
 
   if [[ ! -z $check_vid && -z $check_hevc ]]; then 
-    new_fname="$OUTPUT_FOLDER/${fname}_x265.mp4"
+    new_fname="$output_folder/${fname}_x265.mp4"
     
     if [[ ! -e $new_fname ]]
     then
-      ffmpeg -i "$f" -c:v libx265 -crf 24 -preset medium -c:a copy "$new_fname"
+      convert $f $crf $preset $new_fname
     else
       echo "OK"
     fi
   elif [[ ! -z $check_vid ]]; then
-    [[ $fname == *"x265" ]] && new_fname="$OUTPUT_FOLDER/$f" || new_fname="$OUTPUT_FOLDER/${fname}_x265.$ext"
-    [ -e $new_fname ] || cp "$f" "$new_fname"
+    [[ $fname == *"x265" ]] && new_fname="$output_folder/$f" || new_fname="$output_folder/${fname}_x265.$ext"
+    [ -e $new_fname ] || cp -n "$f" "$new_fname"
   fi
 done
