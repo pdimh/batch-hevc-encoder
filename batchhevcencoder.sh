@@ -64,17 +64,23 @@ for f in *; do
     continue
   fi
 
+  if [[ $(file -i $f | sed 's/.*\s\+\(.*\)\/.*/\1/') != "video" ]]; then
+    continue
+  fi
+
   fname="${f%.*}"
   ext="${f##*.}"
 
-  check_vid=$(ffprobe -v quiet -show_streams $f | grep -E "codec_type=video" -A 1)
-  check_hevc=$(echo "$check_vid" | grep -E "codec_tag_string=hev1" -A 1)
+  probe=$(ffprobe -v quiet -select_streams v -show_entries stream=codec_name,codec_type -of default=nw=1 "$f")
+
+  check_vid=$(echo "$probe" | grep "codec_type=video")
+  check_hevc=$(echo "$probe" | grep "codec_name=hevc")
   
-  echo "$fname $check_hevc"
+  echo "$fname $check_vid $check_hevc"
 
   if [[ ! -z $check_vid && -z $check_hevc ]]; then 
     new_fname="$output_folder/${fname}_x265.mp4"
-    
+
     if [[ ! -e $new_fname ]]
     then
       convert $f $crf $preset $new_fname
