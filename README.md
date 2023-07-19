@@ -17,8 +17,12 @@ Currently, the following options are supported: -f, -p, -o -v:
 you can print this table by using ``-h`` option.
 
 By default, FFmpeg output is suppressed. You can enable it by using -v option. 
-It is not possible to set the input folder, by design it will try to encode all videos in **current folder**. 
+It is not possible to set the input folder, by design it will try to encode all videos in the **current folder**. 
 
 ## FFmpeg
 
-[FFmpeg](https://ffmpeg.org/) is responsible for encoding and it is **NOT** distributed by this project, you must install it first. It is recommended that you check it's license before use.
+[FFmpeg](https://ffmpeg.org/) is responsible for encoding and as it is **NOT** distributed by this project, you must install it first. It is recommended that you check it's license before use.
+
+## License
+
+batch-hevc-encoder is licensed under the GNU GENERAL PUBLIC LICENSE (GPL) version 2.
