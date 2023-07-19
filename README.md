@@ -4,7 +4,7 @@ This tool aims to automate the batch encoding of video files to hevc, using FFmp
 
 ## Usage
 
-First, backup your files. This script does not intend to overwrite any files, but it has not been tested extensively.
+First, backup your files. This script does not intend to overwrite any file, but it has not been tested extensively.
 Currently, the following options are supported: -f, -p, -o -v:
 
 ```
